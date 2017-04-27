@@ -7,3 +7,6 @@
 6. Run "python manage.py migrate"
 7. Run "python manage.py runserver"
 8. Access on localhost:8000
+
+##Destructive token
+1. user with token "123xyz" can delete individual or all posts

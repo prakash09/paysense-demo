@@ -1,0 +1,40 @@
+{% load staticfiles %}
+<html>
+<head>
+	<title>Chatter</title>
+</head>
+<body>
+	<div>
+		<h3>Write something in the box below and hit "Post"</h3>
+		<form method="post" action="{% url 'blog:save_posts' %}">
+			{% csrf_token %}
+			<input type="text" name="post_text"> 
+			<input type="submit" value="Post">
+		</form>
+		<button onclick=deletePost(this,'')>Delete All</button>
+	</div>
+
+	{% for post in all_posts %}
+		<div>
+			<h3>{{post.user_ip}}</h3><div>{{post.created_on}}</div><a href="javascript:;" onclick="deletePost(this,{{post.id}})">Delete</a>
+			<p> {{post.post_text}}</p>
+		</div>
+	{% endfor %}
+	<script>
+			function deletePost(obj,id){
+				$(".temp_form").remove()
+				if(id){
+					var link_url=`{% url 'blog:delete_post' %}${id}/`
+				}
+				else{
+					var link_url="{% url 'blog:delete_post' %}"
+				}
+				$(`<div class="temp_form"><form method="post" action="${link_url}"><input type="text" name="token"><input type="submit" value="done"> <form></div>`).insertAfter(obj)
+			}
+
+	</script>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+</body>
+</html>

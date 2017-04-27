@@ -8,6 +8,7 @@ import json
 
 
 def get_client_ip(request):
+    ''' This method is for getting IP address of the user '''
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
@@ -16,12 +17,19 @@ def get_client_ip(request):
     return ip
 
 def listAllPosts(request):
-
+    ''' Landing page. List all posts '''
     all_posts=Post.objects.all()
     return render(request,'blog/index.html',{'all_posts':all_posts})
 
 @csrf_exempt
 def deletePosts(request, post_id=None):
+    ''' 
+        For deleting posts. 
+        Cases:
+        1. When post_id is present. Get the post with that id and delete.
+        2. When post_id is not present. Delete all posts.
+
+    '''
     if request.method=='POST':
         if request.POST['token']=='123xyz':
             if post_id:
@@ -36,8 +44,15 @@ def deletePosts(request, post_id=None):
 
 
 def savePost(request):
+    '''
+        Save all posts.
+    '''
     if request.method=='POST':
-        post=Post.objects.create(user_ip=get_client_ip(request),post_text=request.POST['post_text'])
-        return redirect('blog:list_all_posts')
+        try:
+            post_text=request.POST['post_text']
+            Post.objects.create(user_ip=get_client_ip(request),post_text=post_text)
+            return redirect('blog:list_all_posts')
+        except:
+            return HttpResponse(json.dumps({"status":"Input not correct"}),status=400)
     else:
         return Http404()
